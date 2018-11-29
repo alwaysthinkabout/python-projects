@@ -1,0 +1,386 @@
+{% extends "layout.html" %}
+
+{% block title %}主页{% endblock %}
+
+{% block style %}
+    <link href="{{ base_url() }}/lib/datatables/css/datatables.min.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ base_url() }}/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ base_url() }}/lib/datatables/Buttons-1.5.4/css/buttons.dataTables.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="{{ base_url() }}/css/custom.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block main_inner %}
+    <div class="row mb-3">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="tab1" data-toggle="tab" href="#currentQF" role="tab" aria-controls="home"
+                   aria-selected="true">恶意欠费识别</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="tab2" data-toggle="tab" href="#history" role="tab"
+                   aria-controls="profile" aria-selected="false">历史记录查询</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="currentQF" role="tabpanel" aria-labelledby="home-tab">
+            <div class="row">
+                <div>
+                    <label for="threshold1">阈值（默认0.8）</label>
+                    <input id="threshold1" type="number" value="0.8" step="0.1" min="0.0" style="width: 35%"/>
+                </div>
+                <div style="width:20%">
+                    <label for="branch1">供电所属分局</label>
+                    <select id="branch1" name="select">
+                        <option value="全部" selected>全部</option>
+                        <option value="莞城">莞城街道</option>
+                        <option value="南城">南城街道</option>
+                        <option value="东城">东城街道</option>
+                        <option value="万江">万江街道</option>
+                        <option value="石碣">石碣镇</option>
+                        <option value="石龙">石龙镇</option>
+                        <option value="茶山">茶山镇</option>
+                        <option value="石排">石排镇</option>
+                        <option value="企石">企石镇</option>
+                        <option value="横沥">横沥镇</option>
+                        <option value="桥头">桥头镇</option>
+                        <option value="谢岗">谢岗镇</option>
+                        <option value="东坑">东坑镇</option>
+                        <option value="常平">常平镇</option>
+                        <option value="寮步">寮步镇</option>
+                        <option value="大朗">大朗镇</option>
+                        <option value="黄江">黄江镇</option>
+                        <option value="清溪">清溪镇</option>
+                        <option value="塘厦">塘厦镇</option>
+                        <option value="凤岗">凤岗镇</option>
+                        <option value="长安">长安镇</option>
+                        <option value="虎门">虎门镇</option>
+                        <option value="厚街">厚街镇</option>
+                        <option value="沙田">沙田镇</option>
+                        <option value="道滘">道滘镇</option>
+                        <option value="洪梅">洪梅镇</option>
+                        <option value="麻涌">麻涌镇</option>
+                        <option value="中堂">中堂镇</option>
+                        <option value="高埗">高埗镇</option>
+                        <option value="樟木头">樟木头镇</option>
+                        <option value="大岭山">大岭山镇</option>
+                        <option value="望牛墩">望牛墩镇</option>
+                        <option value="松山湖">松山湖</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+
+                <div class="col-2">
+                    <button id="currentQFQuery" type="button" class="btn btn-primary btn">恶意欠费识别</button>
+                </div>
+
+            </div>
+            <div class="row">
+                <table id="dataTable1" class="table table-bordered">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>用户编号</th>
+                        <th>用户名称</th>
+                        <th>用电地址</th>
+                        <th>电费年月</th>
+                        <th>欠费金额（单位：元）</th>
+                        <th>违约金</th>
+                        <th>违约金日期</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="row">
+                <div>
+                    <label for="threshold2">阈值（默认0.8）</label>
+                    <input id="threshold2" type="number" value="0.8" step="0.1" min="0.0" style="width: 35%"/>
+                </div>
+                <div style="width:20%">
+                    <label for="branch2">供电所属分局</label>
+                    <select id="branch2" name="select">
+                        <option value="全部" selected>全部</option>
+                        <option value="莞城">莞城街道</option>
+                        <option value="南城">南城街道</option>
+                        <option value="东城">东城街道</option>
+                        <option value="万江">万江街道</option>
+                        <option value="石碣">石碣镇</option>
+                        <option value="石龙">石龙镇</option>
+                        <option value="茶山">茶山镇</option>
+                        <option value="石排">石排镇</option>
+                        <option value="企石">企石镇</option>
+                        <option value="横沥">横沥镇</option>
+                        <option value="桥头">桥头镇</option>
+                        <option value="谢岗">谢岗镇</option>
+                        <option value="东坑">东坑镇</option>
+                        <option value="常平">常平镇</option>
+                        <option value="寮步">寮步镇</option>
+                        <option value="大朗">大朗镇</option>
+                        <option value="黄江">黄江镇</option>
+                        <option value="清溪">清溪镇</option>
+                        <option value="塘厦">塘厦镇</option>
+                        <option value="凤岗">凤岗镇</option>
+                        <option value="长安">长安镇</option>
+                        <option value="虎门">虎门镇</option>
+                        <option value="厚街">厚街镇</option>
+                        <option value="沙田">沙田镇</option>
+                        <option value="道滘">道滘镇</option>
+                        <option value="洪梅">洪梅镇</option>
+                        <option value="麻涌">麻涌镇</option>
+                        <option value="中堂">中堂镇</option>
+                        <option value="高埗">高埗镇</option>
+                        <option value="樟木头">樟木头镇</option>
+                        <option value="大岭山">大岭山镇</option>
+                        <option value="望牛墩">望牛墩镇</option>
+                        <option value="松山湖">松山湖</option>
+                        <option value="其他">其他</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="month">截止月份</label>
+                    <input id="month" type="month"/>
+                </div>
+
+                <div class="col-2">
+                    <button id="historyQuery" type="button" class="btn btn-primary btn">查询历史数据</button>
+                </div>
+
+            </div>
+            <div class="row">
+                <table id="dataTable2" class="table table-bordered">
+                    <thead class="thead-light">
+                    <tr>
+                        <th>用户编号</th>
+                        <th>用户名称</th>
+                        <th>用电地址</th>
+                        <th>电费年月</th>
+                        <th>欠费金额（单位：元）</th>
+                        <th>违约金</th>
+                        <th>数据统计日期</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <iframe id="ifile" style="display:none"></iframe>
+
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript"
+            src="{{ base_url() }}/lib/datatables/Buttons-1.5.4/js/dataTables.buttons.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/JSZip-2.5.0/jszip.min.js"></script>
+    <script type="text/javascript"
+            src="{{ base_url() }}/lib/datatables/Buttons-1.5.4/js/buttons.bootstrap4.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/Buttons-1.5.4/js/buttons.flash.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/Buttons-1.5.4/js/buttons.html5.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/Buttons-1.5.4/js/buttons.print.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/js/utils.js"></script>
+    <script type="text/javascript">
+        let first_sync = "{{ first_sync }}";
+        let synchronizing = "{{ synchronizing }}";
+        let table1, table2;
+        if (synchronizing === "True") {
+            window.location.replace("/synchronizing");
+        } else {
+            if (first_sync === "False") {
+                let msg = "数据还未进行过同步，是否要进行全量同步？";
+                if (confirm(msg) === true) {
+                    $.getJSON("/api/1/sync_first_time", res => {
+                        if (res.success) {
+                            window.location.href = "/synchronizing";
+                        }
+                        else
+                            alert("同步失败，请关闭当前页面并重新进入。");
+                    });
+                }
+            } else {
+                $("#month").val(new Date().format("yyyy-MM"));
+                {#$("#threshold").val(0.8);#}
+                table1 = $("table#dataTable1").DataTable({
+                    serverSide: true,
+                    ajax: {
+                        "url": "/api/1/arrears",
+                        "data": d => {
+                            d.threshold = $('#threshold1').val();
+                            d.branch_office = $('#branch1').val();
+                            d.history = "false";
+                        },
+                        "method": "GET",
+                    },
+                    ordering: false,
+                    columns: [
+                        {data: 'user_no'},
+                        {data: 'user_name'},
+                        {data: 'address'},
+                        {data: 'fee_year_month'},
+                        {data: 'arrears'},
+                        {data: 'liquidated_damages'},
+                        {data: 'time'}
+                    ],
+                    columnDefs: [{
+                        targets: 0,
+                        render: (data, type, row, meta) => {
+                            if (type === 'display') {
+                                data = '<a href="/risk?user_no=' + data + '&name=' + row.user_name + '">' + data + '</a>';
+                            }
+                            return data;
+                        }
+                    }],
+                    bProcessing: true,
+                    bAutoWidth: false,
+                    language: {
+                        "lengthMenu": "每页 _MENU_ 条记录",
+                        "zeroRecords": "暂无数据",
+                        "info": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
+                        "infoEmpty": "无记录",
+                        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                        "search": "查找",
+                        "processing": "加载中...",
+                        "loadingRecords": "加载中...",
+                        "paginate": {
+                            "first": "首页",
+                            "last": "尾页",
+                            "next": "下一页",
+                            "previous": "上一页"
+                        },
+                    },
+                    dom: '<i<t>rlBp>',
+                    bFilter: false,
+                    buttons: [
+                        {
+                            text: '导出',
+                            action: (e, dt, node, config) => {
+                                if (confirm("您确定要导出吗？")) {
+                                    let title = "风险值" + $("#threshold1").val() + "以上的恶意欠费用户";
+                                    exportExcel(title, false);
+                                }
+                            }
+                        }
+                    ]
+                });
+                table2 = $("table#dataTable2").DataTable({
+                    serverSide: true,
+                    ajax: {
+                        "url": "/api/1/arrears",
+                        "data": d => {
+                            d.threshold = $('#threshold2').val();
+                            d.month = $('#month').val().replace("-", "");
+                            d.branch_office = $('#branch2').val();
+                            d.history = "true";
+                        },
+                        "method": "GET",
+                    },
+                    ordering: false,
+                    columns: [
+                        {data: 'user_no'},
+                        {data: 'user_name'},
+                        {data: 'address'},
+                        {data: 'fee_year_month'},
+                        {data: 'arrears'},
+                        {data: 'liquidated_damages'},
+                        {data: 'time'}
+                    ],
+                    columnDefs: [{
+                        targets: 0,
+                        render: (data, type, row, meta) => {
+                            if (type === 'display') {
+                                data = '<a href="/risk?user_no=' + data + '&name=' + row.user_name + '">' + data + '</a>';
+                            }
+                            return data;
+                        }
+                    }],
+                    bProcessing: true,
+                    bAutoWidth: false,
+                    language: {
+                        "lengthMenu": "每页 _MENU_ 条记录",
+                        "zeroRecords": "暂无数据",
+                        "info": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
+                        "infoEmpty": "无记录",
+                        "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                        "search": "查找",
+                        "processing": "加载中...",
+                        "loadingRecords": "加载中...",
+                        "paginate": {
+                            "first": "首页",
+                            "last": "尾页",
+                            "next": "下一页",
+                            "previous": "上一页"
+                        },
+                    },
+                    dom: '<i<t>rlBp>',
+                    bFilter: false,
+                    buttons: [
+                        {
+                            text: '导出',
+                            action: (e, dt, node, config) => {
+                                if (confirm("您确定要导出吗？")) {
+                                    let title = "风险值" + $("#threshold2").val() + "以上的用户历史欠费记录";
+                                    exportExcel(title, true);
+                                }
+                            }
+                        }
+                    ]
+                });
+            }
+        }
+
+        $("button#currentQFQuery").click(() => {
+            let threshold = $('input#threshold1').val();
+            if (threshold === "") {
+                alert("请填写阈值！");
+                return;
+            }
+            table1.ajax.reload();
+        });
+
+        $("button#historyQuery").click(() => {
+            let month = $("input#month").val()
+            let threshold = $('input#threshold2').val();
+            if (month === "") {
+                alert("请选择月份。");
+                return;
+            }
+            if (threshold === "") {
+                alert("请填写阈值！");
+                return;
+            }
+            table2.ajax.reload();
+        });
+
+        $(function () {
+            document.onkeydown = function (e) {
+                let ev = document.all ? window.event : e;
+                if (ev.keyCode === 13) {
+                    // TODO 在当前的tabs查询
+                    switch ($(".nav a.active").html()) {
+                        case "恶意欠费识别":
+                            $("#currentQFQuery").click();
+                            break;
+                        case "历史记录查询":
+                            $("#historyQuery").click();
+                            break;
+                    }
+                }
+            }
+        });
+
+        function exportExcel(title, history) {
+            let dom = document.getElementById('ifile');
+            if (!history) {
+                dom.src = "/api/1/export?threshold=" + $("#threshold1").val() + "&branch_office=" + $("#branch1").val()
+                    + "&file_name=" + title + "&history=" + history;
+            } else {
+                dom.src = "/api/1/export?month=" + $("#month").val().replace("-", "") + "&threshold=" + $("#threshold2").val()
+                    + "&branch_office=" + $("#branch2").val() + "&file_name=" + title + "&history=" + history;
+            }
+        }
+    </script>
+{% endblock %}

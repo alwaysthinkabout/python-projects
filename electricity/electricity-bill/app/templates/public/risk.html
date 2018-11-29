@@ -1,0 +1,255 @@
+{% extends "layout.html" %}
+
+{% block title %}风险{% endblock %}
+
+{% block style %}
+    <link href="{{ base_url() }}/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+    <link href="{{ base_url() }}/css/custom.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block main_inner %}
+    <div class="row">
+        停电用户查询模块
+    </div>
+    <form id="form1" name="form1" class="bs-example bs-example-form mt-3">
+        <div class="row">
+            <div style="width:25%">
+                <label>用户编号</label>
+                <input id="userNo" type="text" name="textfield" style="margin-left: 10px;" value="{{ user_no }}"/>
+            </div>
+            <div style="width:25%">
+                <label >用户名称</label>
+                <input id="username" type="text" style="margin-left: 10px;" name="textfield2" value="{{ name }}"/>
+            </div>
+
+            <div style="width:25%">
+                <label >月份选择</label>
+                <input id="month" style="margin-left: 10px;" type="month"/>
+            </div>
+
+        </div>
+         <div class="row">
+                <button id="query" type="button" class="btn btn-primary">查询>>></button>
+            </div>
+        <div>
+            <h5>用户欠费风险w曲线图：</h5>
+            <div class="row">
+                <div id="chart" style="height:350px;width:60%"></div>
+            </div>
+            <p class="STYLE1">历史欠费查询结果：</p>
+        </div>
+    </form>
+    <table id="dataTable" class="table table-bordered">
+        <thead class="thead-light">
+        <tr>
+            <th>用户编号</th>
+            <th>用户名称</th>
+            <th>用电地址</th>
+            <th>电费年月</th>
+            <th>欠费金额（单位：元）</th>
+            <th>违约金</th>
+            <th>数据统计日期</th>
+        </tr>
+        </thead>
+    </table>
+    <!-- Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    {#<p class="modal-title" id="myModalLabel">操作提示</p>#}
+                </div>
+                <div class="modal_form_content">
+                    <form class="modal_form form-horizontal" role="form">
+                        <p class="red" style="font-size: 20px;margin-left:20px;" id="prompt_header">
+                            当前有多个同名用户，请选择其中一个：
+                        </p>
+                        <div>
+                            <span class="lab_text text-right"></span>
+                            <select class="modal_form_select_mul" size="3" id="confirmIds"
+                                    style="margin-left:20px;width:350px;margin-bottom:10px">
+
+                            </select>
+                            {#<p id="prompt_content" class="my-delItem"></p>#}
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer" id="modal-footer">
+                    <button type="button" class="btn btn-info" onclick="confirmToFind()">确 定</button>
+                    <button type="button" class="btn  btn-default" data-dismiss="modal">取 消</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+{% endblock %}
+
+{% block script %}
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/js/datatables.min.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/lib/datatables/js/dataTables.bootstrap4.min.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/js/echarts.min.js"></script>
+    <script type="text/javascript" src="{{ base_url() }}/js/utils.js"></script>
+    <script type="text/javascript">
+        $("#month").val(new Date().format("yyyy-MM"));
+        let table = $("table#dataTable").DataTable({
+            ajax: {
+                "url": "/api/1/personalArrears",
+                "data": d => {
+                    d.month = $('#month').val().replace("-", "");
+                    d.user_name = $('#username').val();
+                    d.user_no = $('#userNo').val();
+                },
+                "method": "GET"
+            },
+            columns: [
+                {data: 'user_no'},
+                {data: 'user_name'},
+                {data: 'address'},
+                {data: 'fee_year_month'},
+                {data: 'arrears'},
+                {data: 'liquidated_damages'},
+                {data: 'time'}
+            ],
+            language: {
+                "lengthMenu": "每页 _MENU_ 条记录",
+                "zeroRecords": "暂无数据",
+                "info": "第 _PAGE_ 页 ( 总共 _PAGES_ 页 )",
+                "infoEmpty": "无记录",
+                "infoFiltered": "(从 _MAX_ 条记录过滤)",
+                "search": "查找",
+                "processing": "加载中...",
+                "paginate": {
+                    "first": "首页",
+                    "last": "尾页",
+                    "next": "下一页",
+                    "previous": "上一页"
+                },
+            }
+        });
+
+        $(() => {
+            initChart();
+        });
+
+        let option = {
+            xAxis: {
+                type: 'category',
+            },
+            yAxis: {
+                type: 'value',
+            },
+            series: [{
+                name: "风险值",
+                type: 'line',
+                label: {normal: {show: true}},
+                markLine: {
+                    data: [
+                        {
+                            name: "阈值",
+                            yAxis: 0.8
+                        },
+                    ]
+                }
+            }],
+            visualMap: {
+                show: false,
+                dimension: 1,
+                type: "piecewise",
+                pieces: [],
+                outOfRange: {color: "green"}
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+
+        };
+        let chart = echarts.init($("#chart")[0]);
+
+        function initChart() {
+            chart.setOption(option);
+            refreshChart();
+        }
+
+        function refreshChart() {
+            $.getJSON("api/1/risk/" + $('#userNo').val(), {
+                "month": $("#month").val().replace("-", ""),
+                "user_name": $("#username").val()
+            }, res => {
+                let dataX = [];
+                let dataY = [];
+                res.data.sort((a, b) => {
+                   return a.month > b.month
+                });
+                res.data.forEach((v, i, a) => {
+                    dataX.push(v.month);
+                    dataY.push(v.risk);
+                });
+
+                let max = Math.max.apply(Math, dataY);
+                option.xAxis.data = dataX;
+                option.series[0].data = dataY;
+                option.visualMap.pieces[0] = {gte: 0.8, lte: max, color: 'red'};
+                chart.setOption(option);
+            });
+        }
+
+        $("button#query").click(() => {
+            let month = $("#month").val();
+            let userNo = $('#userNo').val();
+            let userName = $('#username').val();
+            if (month === "") {
+                alert("请选择月份。");
+                return;
+            }
+            if (userNo === "" && userName === "") {
+                alert("请填写查找条件！");
+            } else if ($('#userNo').val() === "") {  //当用户编号为空但用户名称不为空时，需要判断用户名称是否有重名
+                $.getJSON("/api/1/check_user_name", {"user_name": userName}, res => {
+                    let data = res.data;
+                    if (data.length > 1) {
+                        $("#confirmIds").empty();
+                        for (let i = 0; i < data.length; i++) {
+                            console.log(data[i]);
+                            $("#confirmIds").append("<option value = " + data[i].yhbh + " > " + data[i].yhbh + "  " + data[i].yhmc + "  " + data[i].yddz + "</option>");
+                        }
+                        $("#confirmModal").modal('show');
+                    } else if (data.length <= 0) {
+                        alert("用户名称输入有误");
+                    } else {
+                        $("#userNo").val(data[0].yhbh);
+                        table.ajax.reload();
+                        refreshChart();
+                    }
+                });
+            } else {
+                table.ajax.reload();
+                refreshChart();
+            }
+        });
+
+        function confirmToFind() {
+            let value = $("#confirmIds").val();
+            if (value == null) {
+                alert("请选择要查看的用户");
+                return;
+            }
+            $("#confirmModal").modal('hide');
+            $("#userNo").val(value);
+            table.ajax.reload();
+            refreshChart();
+        }
+
+         $(function(){
+            document.onkeydown = function(e){
+                let ev = document.all ? window.event : e;
+                if(ev.keyCode==13) {
+                    $("button#query").click();
+                }
+            }
+        });
+    </script>
+{% endblock %}

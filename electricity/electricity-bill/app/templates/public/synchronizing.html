@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}正在同步{% endblock %}
+
+{% block style %}
+    <link href="{{ base_url() }}/lib/datatables/css/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block main_inner %}
+    <h4 align="center" style="margin-top: 50px">数据库正在进行同步，同步结束后将以邮件形式通知您，请留意您的邮箱</h4>
+{% endblock %}
+
+{% block script %}
+{% endblock %}

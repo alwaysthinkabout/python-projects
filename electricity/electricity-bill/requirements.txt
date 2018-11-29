@@ -1,0 +1,14 @@
+Flask
+Flask-Caching
+Flask-Principal
+Flask-SQLAlchemy
+Flask-Script
+Flask-Restplus
+Flask-Mail
+Flask-Excel
+pyexcel-xlsx
+schedule
+pymysql
+cx_Oracle
+psutil
+pytest

@@ -1,0 +1,15 @@
+.dataTables_wrapper {
+    position: relative;
+    clear: both;
+    zoom: 1;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.nav-tabs .nav-link.active {
+    color: #007bff;
+}
+
+.nav-tabs .nav-link {
+    color: #000000;
+}
